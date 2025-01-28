@@ -1,0 +1,33 @@
+1. create package.json file by "npm init -y"
+
+2. install "express.js, mongoose, typeScript, dotEnv, Cors" by Docs Provided command,
+
+3. create tsconfig.json file by "tsc ---init" and edit rootDir and OutDir,
+
+4. create src folder with app.ts, and server.ts file,
+
+5. copy getting started form express.js doc and paste this in app.ts and cut the listener and paste in server.ts file,
+
+6. import mongoose in server.ts file with and get code from doc, and then go to the mongodb atlas an copy the driver link,
+
+7. create a .env file and keep the mongodb driver link and port in this file,
+
+8. create a async function with the name bootStrap or main and make sure the listener and the driver connecter in the try block,
+
+9. create app folder in src folder, and a config folder in app folder and index.ts file in config folder.
+
+10. import in this file dotEnv and path from fs. and export the port and db_user link, for details check dotEnv doc.
+
+---------------------------------------------------------------------------------------------------------------------
+
+11. write a script in package.json file by "build" name with value "tsc"
+
+12. install ts-node-dev for run the typeScript code directly, and write a script in package.json file by "start:dev" name with the
+    link provided in doc with the route src/server.ts 
+
+13. write a script in package.json file by "start:prod" name with the value "node ./dist/server.js"
+
+14. add Eslint and prettier by read blogs : 
+                    1. https://blog.logrocket.com/linting-typescript-eslint-prettier
+                    2. https://dev.to/shafayat/-express-typescript-eslint-prettiersetup-5fhg
+                    3. video : https://www.facebook.com/100004778526351/videos/908806490911910/
