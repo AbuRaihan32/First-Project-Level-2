@@ -12,13 +12,15 @@ export default [
   eslintPluginPrettierRecommended,
 
   {
-    ignores: ['node_modules', 'dist'],
     rules: {
       'no-unused-vars': 'error',
+      'prefer-const': ['error', { ignoreReadBeforeAssign: true }],
       'no-unused-expressions': 'error',
-      'prefer-const': 'error',
       'no-console': 'warn',
       'no-undef': 'error',
     },
+  },
+  {
+    ignores: ['.node_modules/*'],
   },
 ];

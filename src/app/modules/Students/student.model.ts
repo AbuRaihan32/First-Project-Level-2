@@ -1,4 +1,4 @@
-import { Schema, model, connect} from 'mongoose';
+import { Schema, model } from 'mongoose';
 import {
   Guardian,
   UserName,
@@ -45,8 +45,6 @@ const StudentSchema = new Schema<Student>({
   isActive: ['active', 'blocked'],
 });
 
-
-
 //! create Student model
 
-export const StudentModel = model<Student>('Student', StudentSchema)
+export const StudentModel = model<Student>('Student', StudentSchema);
