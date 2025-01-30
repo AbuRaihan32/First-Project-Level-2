@@ -1,12 +1,17 @@
 import { Schema, model } from 'mongoose';
+import bcrypt from 'bcrypt';
+// import validator from 'validator';
 import {
-  Guardian,
-  UserName,
-  LocalGuardian,
-  Student,
+  TGuardian,
+  TUserName,
+  TLocalGuardian,
+  TStudent,
+  TStudentModel,
+  // TStudentMethods,
 } from './student.interface';
+import config from '../../config';
 
-const UserNameSchema = new Schema<UserName>({
+const UserNameSchema = new Schema<TUserName>({
   firstName: {
     type: String,
     required: [true, 'First name is required'],
@@ -32,7 +37,7 @@ const UserNameSchema = new Schema<UserName>({
   },
 });
 
-const GuardianSchema = new Schema<Guardian>({
+const GuardianSchema = new Schema<TGuardian>({
   fatherName: {
     type: String,
     required: [true, "Father's name is required"],
@@ -59,7 +64,7 @@ const GuardianSchema = new Schema<Guardian>({
   },
 });
 
-const LocalGuardianSchema = new Schema<LocalGuardian>({
+const LocalGuardianSchema = new Schema<TLocalGuardian>({
   name: {
     type: String,
     required: [true, "Local guardian's name is required"],
@@ -77,11 +82,17 @@ const LocalGuardianSchema = new Schema<LocalGuardian>({
   },
 });
 
-const StudentSchema = new Schema<Student>({
+const StudentSchema = new Schema<TStudent, TStudentModel>({
   id: {
     type: String,
     required: [true, 'ID is required'],
     unique: true,
+  },
+  password: {
+    type: String,
+    required: [true, 'password is required'],
+    unique: true,
+    maxlength: [12, 'password can not be more then 12 characters'],
   },
   name: {
     type: UserNameSchema,
@@ -155,6 +166,31 @@ const StudentSchema = new Schema<Student>({
   },
 });
 
-//! create Student model
+// ! pre save middlewares / hooks : it will work in create documents
+StudentSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds),
+  );
+  next();
+});
 
-export const StudentModel = model<Student>('Student', StudentSchema);
+// ! post save middlewares / hooks
+StudentSchema.post('save', async function () {});
+
+//! add the function for static methods
+StudentSchema.statics.isStudentExists = async function name(id: string) {
+  const existingUser = Student.findOne({ id });
+  return existingUser;
+};
+
+//! add the function for instance methods
+// StudentSchema.methods.isStudentExists = async function name(id: string) {
+//   const existingUser = Student.findOne({ id });
+//   return existingUser;
+// };
+
+//! create Student model
+export const Student = model<TStudent, TStudentModel>('Student', StudentSchema);

@@ -1,26 +1,41 @@
 import { Request, Response } from 'express';
 import { studentServices } from './student.services';
 import studentValidations from './student.validations';
+// import studentValidations from './student.validations.Joi';
 
 const createStudent = async (req: Request, res: Response) => {
-  const studentData = req.body.student;
-  const { error, value: validatedStudentData } =
-    studentValidations.StudentSchema.validate(studentData);
+  try {
+    const studentData = req.body.student;
 
-  if (error) {
-    res.status(500).json({
-      success: false,
-      message: 'something went wrong',
-      error: error.details,
-    });
-  } else {
-    const result =
-      await studentServices.createStudentIntoDB(validatedStudentData);
+    //! validate data with Joi
+    // const { error, value: validatedStudentData } =
+    //   studentValidations.StudentSchema.validate(studentData);
+
+    // ! validate data with Zod
+    const zodParsedData =
+      studentValidations.StudentValidationSchema.parse(studentData);
+
+    const result = await studentServices.createStudentIntoDB(zodParsedData);
     // send response
     res.status(200).json({
       success: true,
       message: 'student is created successfully',
       data: result,
+    });
+    // if (error) {
+    //   res.status(500).json({
+    //     success: false,
+    //     message: 'something went wrong',
+    //     error: error.details,
+    //   });
+    // }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message || 'something went wrong',
+      error: err,
     });
   }
 };
