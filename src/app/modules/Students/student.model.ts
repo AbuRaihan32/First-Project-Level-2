@@ -82,91 +82,108 @@ const LocalGuardianSchema = new Schema<TLocalGuardian>({
   },
 });
 
-const StudentSchema = new Schema<TStudent, TStudentModel>({
-  id: {
-    type: String,
-    required: [true, 'ID is required'],
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: [true, 'password is required'],
-    unique: true,
-    maxlength: [12, 'password can not be more then 12 characters'],
-  },
-  name: {
-    type: UserNameSchema,
-    required: [true, 'Name is required'],
-    trim: true,
-  },
-  gender: {
-    type: String,
-    enum: {
-      values: ['male', 'female'],
-      message:
-        '{VALUE} is not supported. Gender must be either "male" or "female".',
+const StudentSchema = new Schema<TStudent, TStudentModel>(
+  {
+    id: {
+      type: String,
+      required: [true, 'ID is required'],
+      unique: true,
     },
-    required: [true, 'Gender is required'],
-  },
-  dateOfBirth: {
-    type: String,
-  },
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    unique: true,
-    // validate: {
-    //   validator: (value: string) => validator.isEmail(value),
-    //   message: '{VALUE} is not a valid email',
-    // },
-  },
-  contactNo: {
-    type: String,
-    required: [true, 'Contact number is required'],
-  },
-  emergencyContactNo: {
-    type: String,
-    required: [true, 'Emergency contact number is required'],
-  },
-  bloodGroup: {
-    type: String,
-    enum: {
-      values: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
-      message:
-        '{VALUE} is not a valid blood group. Supported blood groups are: A+, A-, B+, B-, AB+, AB-, O+, O-.',
+    password: {
+      type: String,
+      required: [true, 'password is required'],
+      unique: true,
+      maxlength: [12, 'password can not be more then 12 characters'],
+    },
+    name: {
+      type: UserNameSchema,
+      required: [true, 'Name is required'],
+      trim: true,
+    },
+    gender: {
+      type: String,
+      enum: {
+        values: ['male', 'female'],
+        message:
+          '{VALUE} is not supported. Gender must be either "male" or "female".',
+      },
+      required: [true, 'Gender is required'],
+    },
+    dateOfBirth: {
+      type: String,
+    },
+    email: {
+      type: String,
+      required: [true, 'Email is required'],
+      unique: true,
+      // validate: {
+      //   validator: (value: string) => validator.isEmail(value),
+      //   message: '{VALUE} is not a valid email',
+      // },
+    },
+    contactNo: {
+      type: String,
+      required: [true, 'Contact number is required'],
+    },
+    emergencyContactNo: {
+      type: String,
+      required: [true, 'Emergency contact number is required'],
+    },
+    bloodGroup: {
+      type: String,
+      enum: {
+        values: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+        message:
+          '{VALUE} is not a valid blood group. Supported blood groups are: A+, A-, B+, B-, AB+, AB-, O+, O-.',
+      },
+    },
+    presentAddress: {
+      type: String,
+      required: [true, 'Present address is required'],
+    },
+    permanentAddress: {
+      type: String,
+      required: [true, 'Permanent address is required'],
+    },
+    guardian: {
+      type: GuardianSchema,
+      required: [true, 'Guardian information is required'],
+    },
+    localGuardian: {
+      type: LocalGuardianSchema,
+      required: [true, 'Local guardian information is required'],
+    },
+    profileImg: {
+      type: String,
+    },
+    isActive: {
+      type: String,
+      enum: {
+        values: ['active', 'blocked'],
+        message:
+          '{VALUE} is not a valid status. Status must be either "active" or "blocked".',
+      },
+      default: 'active',
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
-  presentAddress: {
-    type: String,
-    required: [true, 'Present address is required'],
-  },
-  permanentAddress: {
-    type: String,
-    required: [true, 'Permanent address is required'],
-  },
-  guardian: {
-    type: GuardianSchema,
-    required: [true, 'Guardian information is required'],
-  },
-  localGuardian: {
-    type: LocalGuardianSchema,
-    required: [true, 'Local guardian information is required'],
-  },
-  profileImg: {
-    type: String,
-  },
-  isActive: {
-    type: String,
-    enum: {
-      values: ['active', 'blocked'],
-      message:
-        '{VALUE} is not a valid status. Status must be either "active" or "blocked".',
+  {
+    toJSON: {
+      virtuals: true,
     },
-    default: 'active',
   },
+);
+
+// ! virtual
+StudentSchema.virtual('fullName').get(function () {
+  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
 });
 
-// ! pre save middlewares / hooks : it will work in create documents
+// ! document middlewares
+// * pre save middlewares / hooks : it will work in create documents
 StudentSchema.pre('save', async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const user = this;
@@ -177,8 +194,30 @@ StudentSchema.pre('save', async function (next) {
   next();
 });
 
-// ! post save middlewares / hooks
-StudentSchema.post('save', async function () {});
+// * post save middlewares / hooks
+StudentSchema.post('save', async function (doc, next) {
+  doc.password = '';
+  next();
+});
+
+// ! query middlewares
+//* pre find middleware : work in current query
+StudentSchema.pre('find', async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+// * pre findOne middleware
+StudentSchema.pre('findOne', async function (next) {
+  this.findOne({ isDeleted: { $ne: true } });
+  next();
+});
+
+// * pre aggregate middleware
+StudentSchema.pre('aggregate', async function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+  next();
+});
 
 //! add the function for static methods
 StudentSchema.statics.isStudentExists = async function name(id: string) {
@@ -186,7 +225,7 @@ StudentSchema.statics.isStudentExists = async function name(id: string) {
   return existingUser;
 };
 
-//! add the function for instance methods
+//* add the function for instance methods
 // StudentSchema.methods.isStudentExists = async function name(id: string) {
 //   const existingUser = Student.findOne({ id });
 //   return existingUser;

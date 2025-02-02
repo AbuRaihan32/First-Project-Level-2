@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const UserNameSchema = z.object({
+const UserNameValidationSchema = z.object({
   firstName: z
     .string()
     .max(20, 'First name cannot be more than 20 characters')
@@ -13,7 +13,7 @@ const UserNameSchema = z.object({
   }),
 });
 
-const GuardianSchema = z.object({
+const GuardianValidationSchema = z.object({
   fatherName: z.string(),
   fatherContactNo: z.string(),
   fatherOccupation: z.string(),
@@ -22,7 +22,7 @@ const GuardianSchema = z.object({
   motherOccupation: z.string(),
 });
 
-const LocalGuardianSchema = z.object({
+const LocalGuardianValidationSchema = z.object({
   name: z.string(),
   contactNo: z.string(),
   occupation: z.string().optional(),
@@ -32,7 +32,7 @@ const LocalGuardianSchema = z.object({
 const StudentValidationSchema = z.object({
   id: z.string(),
   password: z.string().max(12),
-  name: UserNameSchema,
+  name: UserNameValidationSchema,
   gender: z.enum(['male', 'female']),
   dateOfBirth: z.string().optional(),
   email: z.string().email('Invalid email format'),
@@ -43,10 +43,11 @@ const StudentValidationSchema = z.object({
     .optional(),
   presentAddress: z.string(),
   permanentAddress: z.string(),
-  guardian: GuardianSchema,
-  localGuardian: LocalGuardianSchema,
+  guardian: GuardianValidationSchema,
+  localGuardian: LocalGuardianValidationSchema,
   profileImg: z.string().optional(),
   isActive: z.enum(['active', 'blocked']).default('active'),
+  isDeleted: z.boolean().default(false),
 });
 
 export default { StudentValidationSchema };

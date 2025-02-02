@@ -8,11 +8,11 @@
 
 5. copy getting started form express.js doc and paste this in app.ts and cut the listener and paste in server.ts file,
 
-6. import mongoose in server.ts file with and get code from doc, and then go to the mongodb atlas an copy the driver link,
+6. import mongoose in server.ts file and get code from doc, and then go to the mongodb atlas an copy the driver link,
 
 7. create a .env file and keep the mongodb driver link and port in this file,
 
-8. create a async function with the name bootStrap or main and make sure the listener and the driver connecter in the try block,
+8. create a async function with the name bootStrap or main and make sure the listener and the driver connecter in the try-catch block,
 
 9. create app folder in src folder, and a config folder in app folder and index.ts file in config folder.
 
@@ -22,8 +22,7 @@
 
 11. write a script in package.json file by "build" name with value "tsc"
 
-12. install ts-node-dev for run the typeScript code directly, and write a script in package.json file by "start:dev" name with the
-    link provided in doc with the route src/server.ts 
+12. install ts-node-dev for run the typeScript code directly, and write a script in package.json file by "start:dev" name with the link provided in doc with the route src/server.ts 
 
 13. write a script in package.json file by "start:prod" name with the value "node ./dist/server.js"
 
