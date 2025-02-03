@@ -1,5 +1,4 @@
 import { Schema, model } from 'mongoose';
-import bcrypt from 'bcrypt';
 // import validator from 'validator';
 import {
   TGuardian,
@@ -9,7 +8,6 @@ import {
   TStudentModel,
   // TStudentMethods,
 } from './student.interface';
-import config from '../../config';
 
 const UserNameSchema = new Schema<TUserName>({
   firstName: {
@@ -87,13 +85,12 @@ const StudentSchema = new Schema<TStudent, TStudentModel>(
     id: {
       type: String,
       required: [true, 'ID is required'],
-      unique: true,
     },
-    password: {
-      type: String,
-      required: [true, 'password is required'],
-      unique: true,
-      maxlength: [12, 'password can not be more then 12 characters'],
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'user id is required'],
+      unique: [true, 'user id must be unique'],
+      ref: 'User',
     },
     name: {
       type: UserNameSchema,
@@ -156,15 +153,6 @@ const StudentSchema = new Schema<TStudent, TStudentModel>(
     profileImg: {
       type: String,
     },
-    isActive: {
-      type: String,
-      enum: {
-        values: ['active', 'blocked'],
-        message:
-          '{VALUE} is not a valid status. Status must be either "active" or "blocked".',
-      },
-      default: 'active',
-    },
     isDeleted: {
       type: Boolean,
       default: false,
@@ -180,24 +168,6 @@ const StudentSchema = new Schema<TStudent, TStudentModel>(
 // ! virtual
 StudentSchema.virtual('fullName').get(function () {
   return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
-});
-
-// ! document middlewares
-// * pre save middlewares / hooks : it will work in create documents
-StudentSchema.pre('save', async function (next) {
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const user = this;
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.bcrypt_salt_rounds),
-  );
-  next();
-});
-
-// * post save middlewares / hooks
-StudentSchema.post('save', async function (doc, next) {
-  doc.password = '';
-  next();
 });
 
 // ! query middlewares
