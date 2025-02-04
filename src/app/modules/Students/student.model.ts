@@ -150,12 +150,12 @@ const StudentSchema = new Schema<TStudent, TStudentModel>(
       type: LocalGuardianSchema,
       required: [true, 'Local guardian information is required'],
     },
+    admissionSemester: {
+      type: String,
+      required: true,
+    },
     profileImg: {
       type: String,
-    },
-    isDeleted: {
-      type: Boolean,
-      default: false,
     },
   },
   {

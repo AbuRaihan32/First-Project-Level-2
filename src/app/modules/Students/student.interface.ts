@@ -35,8 +35,8 @@ export type TStudent = {
   permanentAddress: string;
   guardian: TGuardian;
   localGuardian: TLocalGuardian;
+  admissionSemester: string;
   profileImg?: string;
-  isDeleted: boolean;
 };
 
 //! creating type and Model type for create custom static methods.
