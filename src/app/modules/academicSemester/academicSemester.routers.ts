@@ -18,6 +18,12 @@ router.get(
   '/:SemesterID',
   academicSemesterControllers.getSingleAcademicSemester,
 );
-router.put('/:SemesterID', academicSemesterControllers.updateAcademicSemester);
+router.put(
+  '/:SemesterID',
+  validateRequest(
+    AcademicSemesterValidations.UpdateAcademicSemesterValidationSchema,
+  ),
+  academicSemesterControllers.updateAcademicSemester,
+);
 
 export const AcademicSemesterRoutes = router;
