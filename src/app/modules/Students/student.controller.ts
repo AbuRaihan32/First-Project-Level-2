@@ -6,6 +6,7 @@ import { studentServices } from './student.services';
 import sendResponse from '../../utils/sendResponse';
 import status from 'http-status';
 import catchAsync from '../../utils/catchAsync';
+import AppErrors from '../../errors/AppErrors';
 
 const getAllStudents = catchAsync(async (req, res) => {
   const result = await studentServices.getAllStudentsFromDB();
@@ -18,9 +19,12 @@ const getAllStudents = catchAsync(async (req, res) => {
 });
 
 const getSingleStudent = catchAsync(async (req, res) => {
-  const { userId } = req.params;
+  const { studentId } = req.params;
 
-  const result = await studentServices.getSingleStudentFromDB(userId);
+  const result = await studentServices.getSingleStudentFromDB(studentId);
+  if (!result) {
+    throw new AppErrors(status.NOT_FOUND, 'student not found!');
+  }
   sendResponse(res, {
     status: status.OK,
     success: true,
@@ -29,14 +33,14 @@ const getSingleStudent = catchAsync(async (req, res) => {
   });
 });
 
-const deleteStudent = catchAsync(async (req, res) => {
-  const { userId } = req.params;
+const deleteStudent = catchAsync(async (req, res, next) => {
+  const { studentId } = req.params;
 
-  const result = await studentServices.deleteStudentFromDB(userId);
+  const result = await studentServices.deleteStudentFromDB(studentId, next);
   sendResponse(res, {
     status: status.OK,
     success: true,
-    message: 'student deleted successfully',
+    message: 'student is deleted successfully',
     data: result,
   });
 });

@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-unused-vars */
-
 import { userServices } from './user.services';
 import sendResponse from '../../utils/sendResponse';
 import status from 'http-status';
@@ -9,7 +6,11 @@ import catchAsync from '../../utils/catchAsync';
 const createStudent = catchAsync(async (req, res, next) => {
   const { password, student: studentData } = req.body;
 
-  const result = await userServices.createStudentIntoDB(password, studentData);
+  const result = await userServices.createStudentIntoDB(
+    password,
+    studentData,
+    next,
+  );
 
   sendResponse(res, {
     status: status.OK,

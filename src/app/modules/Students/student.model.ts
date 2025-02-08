@@ -156,8 +156,17 @@ const StudentSchema = new Schema<TStudent, TStudentModel>(
       required: true,
       ref: 'Academic-Semester',
     },
+    academicDepartment: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: 'academic-department',
+    },
     profileImg: {
       type: String,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   {
@@ -187,10 +196,10 @@ StudentSchema.pre('findOne', async function (next) {
 });
 
 // * pre aggregate middleware
-StudentSchema.pre('aggregate', async function (next) {
-  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
-  next();
-});
+// StudentSchema.pre('aggregate', async function (next) {
+//   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+//   next();
+// });
 
 //! add the function for static methods
 StudentSchema.statics.isStudentExists = async function name(id: string) {

@@ -5,34 +5,54 @@ import { Student } from '../Students/student.model';
 import { TUser } from './user.interface';
 import { User } from './user.model';
 import { generatedStudentID } from './users.utils';
+import mongoose from 'mongoose';
+import AppErrors from '../../errors/AppErrors';
+import status from 'http-status';
+import { NextFunction } from 'express';
 
-const createStudentIntoDB = async (password: string, studentData: TStudent) => {
-  // create user object for create user into db
+// ! create user and student
+const createStudentIntoDB = async (
+  password: string,
+  studentData: TStudent,
+  next: NextFunction,
+) => {
   const userData: Partial<TUser> = {};
-
-  // if password not given : set default password
   userData.password = password || (config.default_pass as string);
-
-  // set role in user object
   userData.role = 'student';
 
   const admissionSemester = await AcademicSemester.findById(
     studentData.admissionSemester,
   );
 
-  // set manually generated id
-  userData.id = await generatedStudentID(admissionSemester!);
+  // start transaction
+  const session = await mongoose.startSession();
 
-  // create user into db
-  const newUser = await User.create(userData); //! build in static method
+  try {
+    session.startTransaction();
+    userData.id = await generatedStudentID(admissionSemester!);
 
-  // set id as id :: _id as user
-  if (Object.keys(newUser).length) {
-    studentData.id = newUser.id;
-    studentData.user = newUser._id;
+    // create user
+    const newUser = await User.create([userData], { session }); //! build in static method
+    if (!newUser.length) {
+      throw new AppErrors(status.BAD_REQUEST, 'failed to create user!..');
+    }
+    studentData.id = newUser[0].id;
+    studentData.user = newUser[0]._id;
 
-    const result = await Student.create(studentData);
-    return result;
+    const newStudent = await Student.create([studentData], { session });
+
+    if (!newStudent.length) {
+      throw new AppErrors(status.BAD_REQUEST, 'failed to create student!..');
+    }
+
+    await session.commitTransaction();
+
+    return newStudent;
+  } catch (err) {
+    await session.abortTransaction();
+    next(err);
+  } finally {
+    await session.endSession();
   }
 };
 

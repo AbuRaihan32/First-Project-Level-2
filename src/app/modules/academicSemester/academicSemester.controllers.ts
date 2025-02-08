@@ -3,6 +3,7 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import status from 'http-status';
 import { AcademicSemesterServices } from './academicSemester.services';
+import AppErrors from '../../errors/AppErrors';
 
 // ! create Academic Semester controller
 const createAcademicSemester = catchAsync(
@@ -27,7 +28,7 @@ const getAllAcademicSemester = catchAsync(
       await AcademicSemesterServices.getAllAcademicSemesterFromDB();
 
     if (!result.length) {
-      throw new Error('there is no semester');
+      throw new AppErrors(status.NOT_FOUND, 'there is no semester');
     }
     sendResponse(res, {
       status: status.OK,
@@ -48,7 +49,7 @@ const getSingleAcademicSemester = catchAsync(
       );
 
     if (!result) {
-      throw new Error('there is no semester for this ID');
+      throw new AppErrors(status.NOT_FOUND, 'there is no semester for this ID');
     }
     sendResponse(res, {
       status: status.OK,

@@ -1,19 +1,15 @@
 import { TAcademicSemester } from '../academicSemester/academicSemester.interface';
 import { User } from './user.model';
 
-const findLastStudent = async () => {
+const findLastStudent = async (admissionSemester: TAcademicSemester) => {
   const lastStudent = await User.findOne(
     {
       role: 'student',
+      id: new RegExp(`^${admissionSemester.year}${admissionSemester.code}`),
     },
-    {
-      id: 1,
-      _id: 0,
-    },
+    { id: 1, _id: 0 },
   )
-    .sort({
-      createdAt: -1,
-    })
+    .sort({ createdAt: -1 })
     .lean();
 
   return lastStudent?.id ? lastStudent.id : undefined;
@@ -22,27 +18,15 @@ const findLastStudent = async () => {
 export const generatedStudentID = async (
   admissionSemester: TAcademicSemester,
 ) => {
-  let currentId = (0).toString();
+  let currentId = '0000';
+  const lastStudentId = await findLastStudent(admissionSemester);
 
-  const lastStudentId = await findLastStudent();
-
-  const lastStudentYear = lastStudentId?.substring(0, 4);
-  const lastStudentCode = lastStudentId?.substring(4, 6);
-
-  const currentStudentYear = admissionSemester.year;
-  const currentStudentCode = admissionSemester.code;
-
-  if (
-    lastStudentId &&
-    lastStudentYear === currentStudentYear &&
-    lastStudentCode === currentStudentCode
-  ) {
-    currentId = lastStudentId?.substring(6);
+  if (lastStudentId) {
+    currentId = lastStudentId.substring(6);
   }
 
-  let incrementId = (Number(currentId) + 1).toString().padStart(4, '0');
+  const incrementId = (Number(currentId) + 1).toString().padStart(4, '0');
+  const newId = `${admissionSemester.year}${admissionSemester.code}${incrementId}`;
 
-  incrementId = `${admissionSemester.year}${admissionSemester.code}${incrementId}`;
-
-  return incrementId;
+  return newId;
 };
