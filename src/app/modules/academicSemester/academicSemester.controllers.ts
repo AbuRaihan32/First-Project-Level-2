@@ -69,15 +69,6 @@ const updateAcademicSemester = catchAsync(
       updatedDoc,
     );
 
-    if (result.matchedCount == 0) {
-      throw new Error('no semester match this Id');
-    }
-    if (!result.acknowledged) {
-      throw new Error('invalid input');
-    }
-    if (result.modifiedCount == 0) {
-      throw new Error('everything Up to date');
-    }
     sendResponse(res, {
       status: status.OK,
       success: true,

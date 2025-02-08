@@ -51,7 +51,7 @@ const getSingleAcademicFaculty = catchAsync(
 );
 
 // ! update faculty
-const updateAcademicFacultyToDB = catchAsync(
+const updateAcademicFaculty = catchAsync(
   async (req: Request, res: Response) => {
     const { facultyId } = req.params;
     const updatedDoc = req.body;
@@ -60,7 +60,6 @@ const updateAcademicFacultyToDB = catchAsync(
       facultyId,
       updatedDoc,
     );
-
     sendResponse(res, {
       status: status.OK,
       success: true,
@@ -74,5 +73,5 @@ export const academicFacultyControllers = {
   createAcademicFaculty,
   getAllAcademicFaculties,
   getSingleAcademicFaculty,
-  updateAcademicFacultyToDB,
+  updateAcademicFaculty,
 };

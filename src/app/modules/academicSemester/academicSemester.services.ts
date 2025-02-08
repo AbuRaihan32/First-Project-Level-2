@@ -36,7 +36,7 @@ const UpdateAcademicSemesterToDB = async (
   if (AcademicSemesterNameCodeMapper[updatedDoc.name] !== updatedDoc.code) {
     throw new Error('Invalid Semester Code!');
   }
-  const result = AcademicSemester.updateOne({ _id: id }, updatedDoc);
+  const result = AcademicSemester.findOneAndUpdate({ _id: id }, updatedDoc);
   return result;
 };
 

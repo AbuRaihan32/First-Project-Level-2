@@ -26,4 +26,4 @@ router.put(
   academicSemesterControllers.updateAcademicSemester,
 );
 
-export const AcademicSemesterRoutes = router;
+export const AcademicSemesterRouter = router;

@@ -20,7 +20,7 @@ router.patch(
   validateRequest(
     academicFacultyValidations.updateAcademicFacultyValidationSchema,
   ),
-  academicFacultyControllers.updateAcademicFacultyToDB,
+  academicFacultyControllers.updateAcademicFaculty,
 );
 
 export const AcademicFacultyRouter = router;
