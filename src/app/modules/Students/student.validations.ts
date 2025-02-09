@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const UserNameValidationSchema = z.object({
+const createUserNameValidationSchema = z.object({
   firstName: z
     .string()
     .max(20, 'First name cannot be more than 20 characters')
@@ -13,7 +13,7 @@ const UserNameValidationSchema = z.object({
   }),
 });
 
-const GuardianValidationSchema = z.object({
+const createGuardianValidationSchema = z.object({
   fatherName: z.string(),
   fatherContactNo: z.string(),
   fatherOccupation: z.string(),
@@ -22,7 +22,7 @@ const GuardianValidationSchema = z.object({
   motherOccupation: z.string(),
 });
 
-const LocalGuardianValidationSchema = z.object({
+const createLocalGuardianValidationSchema = z.object({
   name: z.string(),
   contactNo: z.string(),
   occupation: z.string().optional(),
@@ -33,7 +33,7 @@ const createStudentValidationSchema = z.object({
   body: z.object({
     password: z.string().max(12).optional(),
     student: z.object({
-      name: UserNameValidationSchema,
+      name: createUserNameValidationSchema,
       gender: z.enum(['male', 'female', 'other']),
       dateOfBirth: z.string().optional(),
       email: z.string().email(),
@@ -42,8 +42,8 @@ const createStudentValidationSchema = z.object({
       bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
       presentAddress: z.string(),
       permanentAddress: z.string(),
-      guardian: GuardianValidationSchema,
-      localGuardian: LocalGuardianValidationSchema,
+      guardian: createGuardianValidationSchema,
+      localGuardian: createLocalGuardianValidationSchema,
       admissionSemester: z.string(),
       academicDepartment: z.string(),
       profileImg: z.string(),
@@ -51,4 +51,67 @@ const createStudentValidationSchema = z.object({
   }),
 });
 
-export default createStudentValidationSchema;
+// ! update
+
+const updateUserNameValidationSchema = z.object({
+  firstName: z
+    .string()
+    .max(20, 'First name cannot be more than 20 characters')
+    .refine((value) => value.charAt(0) === value.charAt(0).toUpperCase(), {
+      message: 'First name must start with a capital letter',
+    })
+    .optional(),
+  middleName: z.string().optional(),
+  lastName: z
+    .string()
+    .refine((value) => /^[A-Za-z]+$/.test(value), {
+      message: 'Last name is not valid',
+    })
+    .optional(),
+});
+
+const updateGuardianValidationSchema = z.object({
+  fatherName: z.string().optional(),
+  fatherContactNo: z.string().optional(),
+  fatherOccupation: z.string().optional(),
+  motherName: z.string().optional(),
+  motherContactNo: z.string().optional(),
+  motherOccupation: z.string().optional(),
+});
+
+const updateLocalGuardianValidationSchema = z.object({
+  name: z.string().optional(),
+  contactNo: z.string().optional(),
+  occupation: z.string().optional(),
+  address: z.string().optional(),
+});
+
+const updateStudentValidationSchema = z.object({
+  body: z.object({
+    student: z
+      .object({
+        name: updateUserNameValidationSchema.optional(),
+        gender: z.enum(['male', 'female', 'other']).optional(),
+        dateOfBirth: z.string().optional(),
+        email: z.string().email().optional(),
+        contactNo: z.string().optional(),
+        emergencyContactNo: z.string().optional(),
+        bloodGroup: z
+          .enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
+          .optional(),
+        presentAddress: z.string().optional(),
+        permanentAddress: z.string().optional(),
+        guardian: updateGuardianValidationSchema.optional(),
+        localGuardian: updateLocalGuardianValidationSchema.optional(),
+        admissionSemester: z.string().optional(),
+        academicDepartment: z.string().optional(),
+        profileImg: z.string().optional(),
+      })
+      .optional(),
+  }),
+});
+
+export const studentValidations = {
+  createStudentValidationSchema,
+  updateStudentValidationSchema,
+};

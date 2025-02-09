@@ -2,6 +2,7 @@ import { userServices } from './user.services';
 import sendResponse from '../../utils/sendResponse';
 import status from 'http-status';
 import catchAsync from '../../utils/catchAsync';
+import AppErrors from '../../errors/AppErrors';
 
 const createStudent = catchAsync(async (req, res, next) => {
   const { password, student: studentData } = req.body;
@@ -11,6 +12,10 @@ const createStudent = catchAsync(async (req, res, next) => {
     studentData,
     next,
   );
+
+  if (!result) {
+    throw new AppErrors(500, 'something went wrong!');
+  }
 
   sendResponse(res, {
     status: status.OK,

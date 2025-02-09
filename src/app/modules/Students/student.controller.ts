@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-unused-vars */
-
-import { NextFunction, Request, Response } from 'express';
 import { studentServices } from './student.services';
 import sendResponse from '../../utils/sendResponse';
 import status from 'http-status';
@@ -33,6 +29,19 @@ const getSingleStudent = catchAsync(async (req, res) => {
   });
 });
 
+const updateStudent = catchAsync(async (req, res) => {
+  const { studentId } = req.params;
+  const { student } = req.body;
+
+  const result = await studentServices.updateStudentToDB(studentId, student);
+  sendResponse(res, {
+    status: status.OK,
+    success: true,
+    message: 'student is updated successfully',
+    data: result,
+  });
+});
+
 const deleteStudent = catchAsync(async (req, res, next) => {
   const { studentId } = req.params;
 
@@ -48,5 +57,6 @@ const deleteStudent = catchAsync(async (req, res, next) => {
 export const studentControllers = {
   getAllStudents,
   getSingleStudent,
+  updateStudent,
   deleteStudent,
 };
