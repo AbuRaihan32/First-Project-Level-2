@@ -9,10 +9,11 @@ import ZodErrorHandler from '../errors/handleZodError';
 import MongooseErrorHandler from '../errors/handleMongooseError';
 import CastErrorHandler from '../errors/handleCastError';
 import DuplicateErrorHandler from '../errors/handleDuplicateError';
+import AppErrors from '../errors/AppErrors';
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next): void => {
-  let statusCode = err.status || 500;
-  let message = err.message || 'Something went wrong!';
+  let statusCode = 500;
+  let message = 'Something went wrong!';
   let errorSources: TErrorSources = [
     {
       path: '',
@@ -40,6 +41,23 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next): void => {
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
+  } else if (err instanceof AppErrors) {
+    statusCode = err?.statusCode;
+    message = err?.message;
+    errorSources = [
+      {
+        path: '',
+        message: err.message,
+      },
+    ];
+  } else if (err instanceof Error) {
+    message = err?.message;
+    errorSources = [
+      {
+        path: '',
+        message: err.message,
+      },
+    ];
   }
 
   res.status(statusCode).json({

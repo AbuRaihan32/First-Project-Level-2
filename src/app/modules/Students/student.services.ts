@@ -6,8 +6,18 @@ import { NextFunction } from 'express';
 import { User } from '../Users/user.model';
 import { TStudent } from './student.interface';
 
-const getAllStudentsFromDB = async () => {
-  const result = await Student.find()
+const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
+  let searchTerm = '';
+
+  if (query?.searchTerm) {
+    searchTerm = query?.searchTerm as string;
+  }
+
+  const result = await Student.find({
+    $or: ['email', 'name.firstName', 'presentAddress'].map((filed) => ({
+      [filed]: { $regex: searchTerm, $options: 'i' },
+    })),
+  })
     .populate('admissionSemester')
     .populate({
       path: 'academicDepartment',
@@ -15,6 +25,10 @@ const getAllStudentsFromDB = async () => {
         path: 'academicFaculty',
       },
     });
+
+  if (!result.length) {
+    throw new Error('not found!');
+  }
   return result;
 };
 

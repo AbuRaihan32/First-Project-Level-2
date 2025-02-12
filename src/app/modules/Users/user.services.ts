@@ -46,7 +46,6 @@ const createStudentIntoDB = async (
     }
 
     await session.commitTransaction();
-
     return newStudent;
   } catch (err) {
     await session.abortTransaction();
