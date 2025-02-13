@@ -21,7 +21,7 @@ const getAllAcademicSemesterFromDB = async () => {
 
 // ! get single academic semester
 const getSingleAcademicSemesterFromDB = async (id: string) => {
-  const result = AcademicSemester.findOne({ _id: id });
+  const result = AcademicSemester.findById(id);
   return result;
 };
 // ! update academic semester
@@ -38,7 +38,7 @@ const UpdateAcademicSemesterToDB = async (
   if (AcademicSemesterNameCodeMapper[updatedDoc.name] !== updatedDoc.code) {
     throw new AppErrors(status.NOT_FOUND, 'Invalid Semester Code!');
   }
-  const result = AcademicSemester.findOneAndUpdate({ _id: id }, updatedDoc);
+  const result = AcademicSemester.findByIdAndUpdate(id, updatedDoc);
   return result;
 };
 

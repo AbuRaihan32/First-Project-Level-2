@@ -26,8 +26,8 @@ const updateAcademicDepartmentToDB = async (
   departmentId: string,
   updatedDoc: TAcademicDepartment,
 ) => {
-  const result = await AcademicDepartment.findOneAndUpdate(
-    { _id: departmentId },
+  const result = await AcademicDepartment.findByIdAndUpdate(
+    departmentId,
     updatedDoc,
   );
 

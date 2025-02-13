@@ -8,6 +8,7 @@ import { TStudent } from './student.interface';
 import { searchableFields } from './student.constants';
 import QueryBuilder from '../../builders/QueryBuilder';
 
+//! get all students
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   // {
   //     const queryObj = { ...query };
@@ -102,8 +103,9 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   return result;
 };
 
+//! get single student
 const getSingleStudentFromDB = async (id: string) => {
-  const result = await Student.findOne({ id })
+  const result = await Student.findById(id)
     .populate('admissionSemester')
     .populate({
       path: 'academicDepartment',
@@ -137,13 +139,14 @@ const updateStudentToDB = async (id: string, updatedDoc: Partial<TStudent>) => {
     }
   }
 
-  const result = await Student.findOneAndUpdate({ id }, modifiedStudentData, {
+  const result = await Student.findByIdAndUpdate(id, modifiedStudentData, {
     new: true,
     runValidators: true,
   });
   return result;
 };
 
+//! delete
 const deleteStudentFromDB = async (id: string, next: NextFunction) => {
   const isStudentExists = await Student.isStudentExists(id);
 
@@ -155,8 +158,8 @@ const deleteStudentFromDB = async (id: string, next: NextFunction) => {
   try {
     session.startTransaction();
 
-    const deletedStudent = await Student.findOneAndUpdate(
-      { id },
+    const deletedStudent = await Student.findByIdAndUpdate(
+      id,
       { isDeleted: true },
       { new: true, session },
     );
@@ -165,8 +168,8 @@ const deleteStudentFromDB = async (id: string, next: NextFunction) => {
       throw new AppErrors(status.BAD_REQUEST, 'failed to delete student');
     }
 
-    const deletedUser = await User.findOneAndUpdate(
-      { id },
+    const deletedUser = await User.findByIdAndUpdate(
+      id,
       { isDeleted: true },
       { new: true, session },
     );
