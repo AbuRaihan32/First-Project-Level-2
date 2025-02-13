@@ -2,7 +2,6 @@ import { userServices } from './user.services';
 import sendResponse from '../../utils/sendResponse';
 import status from 'http-status';
 import catchAsync from '../../utils/catchAsync';
-import AppErrors from '../../errors/AppErrors';
 
 // ! create student
 const createStudent = catchAsync(async (req, res, next) => {
@@ -15,7 +14,7 @@ const createStudent = catchAsync(async (req, res, next) => {
   );
 
   if (!result) {
-    throw new AppErrors(500, 'something went wrong!');
+    throw new Error();
   }
 
   sendResponse(res, {
@@ -36,6 +35,10 @@ const createFaculty = catchAsync(async (req, res, next) => {
     next,
   );
 
+  if (!result) {
+    throw new Error();
+  }
+
   sendResponse(res, {
     status: status.OK,
     success: true,
@@ -44,9 +47,32 @@ const createFaculty = catchAsync(async (req, res, next) => {
   });
 });
 
+//! create admin
+const createAdmin = catchAsync(async (req, res, next) => {
+  const { password, admin: adminData } = req.body;
+
+  const result = await userServices.createAdminIntoDB(
+    password,
+    adminData,
+    next,
+  );
+
+  if (!result) {
+    throw new Error();
+  }
+
+  sendResponse(res, {
+    status: status.OK,
+    success: true,
+    message: 'Admin is created successfully',
+    data: result,
+  });
+});
+
 export const userControllers = {
   createStudent,
   createFaculty,
+  createAdmin,
 };
 
 // ! validate data with Zod
