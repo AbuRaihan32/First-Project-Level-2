@@ -15,22 +15,22 @@ router.get('/', CourseControllers.getAllCourses);
 router.get('/:id', CourseControllers.getSingleCourse);
 router.delete('/:id', CourseControllers.deleteCourse);
 
-// router.patch(
-//   '/:id',
-//   validateRequest(CourseValidations.updateCourseValidationSchema),
-//   CourseControllers.updateCourse,
-// );
+router.patch(
+  '/:id',
+  validateRequest(CourseValidations.updateCourseValidationSchema),
+  CourseControllers.updateCourse,
+);
 
-// router.put(
-//   '/:courseId/assign-faculties',
-//   validateRequest(CourseValidations.facultiesWithCourseValidationSchema),
-//   CourseControllers.assignFacultiesWithCourse,
-// );
+router.put(
+  '/:courseId/assign-faculties',
+  validateRequest(CourseValidations.facultiesWithCourseValidationSchema),
+  CourseControllers.assignFacultiesWithCourse,
+);
 
-// router.delete(
-//   '/:courseId/remove-faculties',
-//   validateRequest(CourseValidations.facultiesWithCourseValidationSchema),
-//   CourseControllers.removeFacultiesFromCourse,
-// );
+router.delete(
+  '/:courseId/remove-faculties',
+  validateRequest(CourseValidations.facultiesWithCourseValidationSchema),
+  CourseControllers.removeFacultiesFromCourse,
+);
 
 export const CourseRouter = router;

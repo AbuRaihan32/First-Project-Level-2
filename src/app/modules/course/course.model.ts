@@ -1,5 +1,9 @@
 import { model, Schema } from 'mongoose';
-import { TCourse, TPreRequisiteCourses } from './course.interface';
+import {
+  TCourse,
+  TCourseFaculty,
+  TPreRequisiteCourses,
+} from './course.interface';
 
 const preRequisiteCoursesSchema = new Schema<TPreRequisiteCourses>({
   course: {
@@ -41,4 +45,46 @@ const courseSchema = new Schema<TCourse>({
   },
 });
 
+//! middleware
+courseSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+
+  next();
+});
+
+courseSchema.pre('findOne', async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+
+  next();
+});
+courseSchema.pre('findOneAndUpdate', async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+
+  const result = await Course.findOne(this.getQuery());
+  if (!result) {
+    throw new Error('the course was deleted!');
+  }
+
+  next();
+});
+
 export const Course = model<TCourse>('course', courseSchema);
+
+const CourseFacultiesSchema = new Schema<TCourseFaculty>({
+  course: {
+    type: Schema.Types.ObjectId,
+    ref: 'course',
+    unique: true,
+  },
+  faculties: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Faculty',
+    },
+  ],
+});
+
+export const CourseFaculties = model<TCourseFaculty>(
+  'Course-Faculty',
+  CourseFacultiesSchema,
+);
