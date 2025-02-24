@@ -82,7 +82,7 @@ const updateCourseIntoDB = async (
       );
 
       if (!deletedPreRequisiteCourses) {
-        throw new AppErrors(status.BAD_REQUEST, 'Failed to update course!');
+        throw new AppErrors(status.BAD_REQUEST, 'Failed To Update Course!');
       }
 
       // filter out new preRequisiteCourses
@@ -128,6 +128,7 @@ const deleteCourseFromDB = async (id: string) => {
   return result;
 };
 
+//! assign faculty
 const assignFacultiesWithCourseIntoDB = async (
   id: string,
   updatedDoc: Partial<TCourseFaculty>,
@@ -146,6 +147,7 @@ const assignFacultiesWithCourseIntoDB = async (
   return result;
 };
 
+//! remove faculty
 const removeFacultiesFromCourseFromDB = async (
   id: string,
   payload: Partial<TCourseFaculty>,

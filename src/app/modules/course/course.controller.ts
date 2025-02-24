@@ -44,6 +44,7 @@ const getSingleCourse = catchAsync(async (req, res) => {
   });
 });
 
+//! update
 const updateCourse = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const result = await CourseServices.updateCourseIntoDB(id, req.body, next);
@@ -69,6 +70,7 @@ const deleteCourse = catchAsync(async (req, res) => {
   });
 });
 
+//! assign faculty
 const assignFacultiesWithCourse = catchAsync(async (req, res) => {
   const { courseId } = req.params;
   const { faculties } = req.body;
@@ -86,6 +88,7 @@ const assignFacultiesWithCourse = catchAsync(async (req, res) => {
   });
 });
 
+//! remove faculty
 const removeFacultiesFromCourse = catchAsync(async (req, res) => {
   const { courseId } = req.params;
   const { faculties } = req.body;
